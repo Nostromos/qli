@@ -1,123 +1,129 @@
 package main
 
 import (
-	"fmt"
-  "encoding/csv"
 	"bufio"
+	"encoding/csv"
+	"flag"
+	"fmt"
+	"log"
+	"math/rand"
 	"os"
 	"strings"
-	"flag"
 	"time"
-	"Math/rand"
 )
 
-func main () {
-	fmt.Println("Welcome to the Quiz Game!")
-	fmt.Println("You'll be asked a series of questions and you'll need to answer them before the time limit (30 secs by default)")
-	fmt.Println("Quizzes will be less than 100 questions and you'll have single word/number answers")
-	fmt.Println("At the end, you'll see how many you got right. Good luck!")
+// Represents a single question
+type Question struct {
+	prompt string
+	answer string
+}
 
-	fmt.Println("Please enter path to quiz questions or hit enter to use default questions...")
+// Represents a file containing a list of questions
+type Quiz struct {
+	path      string
+	filetype  string
+	questions [][]Question
+}
 
-  shuffle := flag.Bool("shuffle", false, "Shuffle the quiz questions")
-	var defaultQuestions string = "./questions.csv";
-	var questionsPath = bufio.NewReader(os.Stdin)
-	path, err := questionsPath.ReadString('\n')
+// Represents a single game
+type Game struct {
+	quiz           Quiz
+	correctAnswers int
+	totalQuestions int
+}
+
+// ANSI colors for the live timer
+// TODO: Refactor this out into a separate file along with all the CLI display logic
+const (
+	Reset  = "\033[0m"
+	Red    = "\033[31m"
+	Green  = "\033[32m"
+	Yellow = "\033[33m"
+	Blue   = "\033[34m"
+)
+
+// Default values for flags
+const (
+	defaultCSV = "./questions.csv"
+	defaultTimeLimit = 30 * time.Second
+)
+
+func main() {
+	// Define flags
+	csvFilePath := flag.String("csv", defaultCSV, "A CSV file in the format of 'question,answer'")
+	shuffleFlag := flag.Bool("shuffle", false, "Shuffle the quiz questions")
+	timeLimit := flag.Duration("limit", defaultTimeLimit, "Time limit for the quiz - default is 30 seconds")
+	flag.Parse()
+
+	// Load questions from CSV file
+	questions, err := loadQuestions(*csvFilePath)
 	if err != nil {
-		panic(err)
-	} else if path == "\n" {
-		path = defaultQuestions
+		log.Fatalf("Failed to load questions: %v", err)
 	}
 
-	path = strings.TrimSpace(path)
-	
-	file, err := os.Open(path)
+	// OPTIONAL: Shuffle if flagged
+	if *shuffleFlag {
+		shuffleQuestions(questions)
+	}
+
+
+	// Welcome
+	fmt.Println("Welcome to the Quiz Game!")
+	fmt.Println("You have %v to answer as many questions as you can. Good luck!", *timeLimit)
+	fmt.Println("Press Enter to start the quiz...")
+
+	// Run quiz with time limit
+	correctAnswers := runQuiz(questions, *timeLimit)
+	fmt.Printf("You got %d out of %d questions correct!\n", correctAnswers, len(questions))
+}
+
+func loadQuestions(path string) ([]Question, error) {
+	file, err := os.Open(strings.TrimSpace(path))
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer file.Close()
 
 	reader := csv.NewReader(file)
 	reader.FieldsPerRecord = 2
-	data, err := reader.ReadAll()
+	records, err := reader.ReadAll()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	if *shuffle {
-		data = shuffleQuestions(data)
-	}
-	var correctAnswers int = 0
-	var totalQuestions int = len(data)
-
-	reader2 := bufio.NewReader(os.Stdin)
-
-	fmt.Println("Press Enter to start the quiz...")
-	reader2.ReadString('\n') // Wait for user to press Enter
-
-	// Record start time for both timers
-	startTimer1 := time.Now()
-
-	// Create a channel to stop the timers
-	stop := make(chan bool)
-
-	// Launch goroutines for both timers
-	go runTimer(startTimer1, 1, stop, Red)   // Timer 1 in red on line 1
-
-	fmt.Println("Press Enter to stop the timers...")
-	reader2.ReadString('\n') // Wait for Enter to stop
-
-	// Signal both goroutines to stop
-	stop <- true
-	stop <- true
-
-	for _, question := range data {
-		var correct = questionsAnswer(question[0], question[1])
-		if correct {
-			correctAnswers++
+	qs := make([]Question, len(records))
+	for i, rec := range records {
+		qs[i] = Question{
+			prompt: rec[0], 
+			answer: cleanInput(rec[1]), // TODO: Ensure that answers are trimmed and lowercased
 		}
 	}
-
-	fmt.Printf("You got %d out of %d questions correct!\n", correctAnswers, totalQuestions)
+	return qs, nil
 }
 
-func questionsAnswer (q, a string) bool {
-	fmt.Println(q)
-	var answer string
-	fmt.Scanln(&answer)
-	answer = cleanInput(answer)
-	a = cleanInput(a)
-	if answer == a {
-		return true
-	} else {
-		return false;
-	}
-}
-
-func cleanInput (s string) string {
+func cleanInput(s string) string {
 	s = strings.TrimSpace(s)
 	s = strings.ToLower(s)
 	return s
 }
 
-func shuffleQuestions (data [][]string) [][]string {
-	for i := range data {
+func shuffleQuestions(questions []Question) {
+	for i := range questions {
 		j := rand.Intn(i + 1)
-		data[i], data[j] = data[j], data[i]
+		questions[i], questions[j] = questions[j], questions[i]
 	}
-	return data
 }
 
-func runTimer(start time.Time, line int, stop chan bool, color string) {
-	for {
-		select {
-		case <-stop:
-			return // Stop the timer when signaled
-		default:
-			elapsed := time.Since(start)
-			// Use ANSI escape code to move cursor and update the correct line with color
-			fmt.Printf("\033[%d;0H%sElapsed time for Timer %d: %s%s", line, color, line, elapsed.Round(time.Second), Reset)
-			time.Sleep(100 * time.Millisecond) // Update every 100ms
-		}
-	}
-}
+// func runTimer(start time.Time, line int, stop chan bool, color string) {
+// 	for {
+// 		select {
+// 		case <-stop:
+// 			return // Stop the timer when signaled
+// 		default:
+// 			elapsed := time.Since(start)
+// 			// Use ANSI escape code to move cursor and update the correct line with color
+// 			fmt.Printf("\033[%d;0H%sElapsed time for Timer %d: %s%s", line, color, line, elapsed.Round(time.Second), Reset)
+// 			time.Sleep(100 * time.Millisecond) // Update every 100ms
+// 		}
+// 	}
+// }
