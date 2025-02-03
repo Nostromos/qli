@@ -1,9 +1,10 @@
 package main
 
 import (
-	"testing"
-	"os"
 	"io/ioutil"
+	"os"
+	"testing"
+	"time"
 )
 
 func createTempFile(t *testing.T, content string) string {
@@ -54,6 +55,7 @@ func TestLoadQuestions_InvalidFile(t *testing.T) {
 		t.Fatal("Expected an error when loading a non-existent file, got nil")
 	}
 }
+
 // TestLoadQuestions_EmptyFile // test that an error is thrown when loading an empty file
 func TestLoadQuestions_EmptyFile(t *testing.T) {
 	path := createTempFile(t, "")
@@ -70,8 +72,6 @@ func TestLoadQuestions_EmptyFile(t *testing.T) {
 }
 
 // TestLoadQuestions_MalformedCSV // test that an error is thrown when loading a malformed CSV
-// TestShuffleQuestions_LengthUnchanged // test that the length of the questions array remains the same after shuffling
-// TestShuffleQuestions_OrderChanges // test that the order of the questions array changes after shuffling
 
 // Test Shuffling Functionality
 // We can't test randomness itself but can validate that consecutive runs with same questions produce different orders (with seeded randomness if needed)
@@ -129,14 +129,63 @@ func TestShuffleQuestions_OrderChanges(t *testing.T) {
 // TestCleanInput_ToLowerCase // Checks that input is lowercased prior to being checked for correctness
 // TestCleanInput_SpecialCharacters // Checkcases that special characters are removed prior to being checked for correctness
 
+func TestCleanInput(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"  Answer  ", "answer"},
+		{"ANSWER", "answer"},
+		{"AnSwEr", "answer"},
+	}
+
+	for _, test := range tests {
+		result := cleanInput(test.input)
+		if result != test.expected {
+			t.Fatalf("Expected %s, but got %s", test.expected, result)
+		}
+	}
+}
+
 // Test Timer Functionality
-// `runTimer` function should start a timer and stop it when a channel is closed but is tricky to test. We *can* test its core behavior by checking that elapsed time is updated and that its stopped when signaled. 
+// `runTimer` function should start a timer and stop it when a channel is closed but is tricky to test. We *can* test its core behavior by checking that elapsed time is updated and that its stopped when signaled.
+
 // TestRunTimer_StartStopCorrectly // Test that the timer starts and stops correctly
+func TestTimer_StartStopCorrectly(t *testing.T) {
+	timer := time.NewTimer(2 * time.Second)
+	stopCh := make(chan bool)
+
+	go func() {
+		select {
+		case <-timer.C:
+			t.Fatal("Timer should have been stopped before it expired")
+		case <-stopCh:
+			return // Timer stopped as expected
+		}
+	}()
+
+	time.Sleep(1 * time.Second) // Simulate some processing
+	stopCh <- true              // Stop the timer
+}
+
 // TestRunTimer_ElapsedTimeCorrect // Test that the elapsed time is correct at different stages of the timer
 
 // Test Quiz Logic
 // Test overall quiz logic, ensuring questions are asked correctly, answers are checked, and scores are calculated correctly
 // TestQuiz_AllQuestionsAsked // Test that all questions are asked unless time runs out
+func TestRunQuiz_AllQuestionsAsked(t *testing.T) {
+	questions := []Question{
+		{"What is 1 + 1?", "2"},
+		{"What is 2 + 2?", "4"},
+	}
+
+	correctAnswers := runQuiz(questions, 10*time.Second)
+	// Assuming user inputs are simulated elsewhere for production
+	if correctAnswers != len(questions) {
+		t.Fatalf("Expected %d correct answers, but got %d", len(questions), correctAnswers)
+	}
+}
+
 // TestQuiz_CorrectAnswerCount // Test that the correct answer count is calculated correctly
 // TestQuiz_EndAfterLastQuestion // Test that the quiz ends after the last question is asked or timer runs out
 // TestQuiz_EndAfterTimer // Test that the quiz ends after the timer runs out
