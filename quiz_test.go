@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -9,7 +8,7 @@ import (
 
 func createTempFile(t *testing.T, content string) string {
 	t.Helper() // Marks this as a test helper function
-	tmpfile, err := ioutil.TempFile("", "quiz_test*.csv")
+	tmpfile, err := os.CreateTemp("", "quiz_test*.csv")
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
