@@ -3,6 +3,13 @@
 ## Summary
 Build a CLI Quiz app that uses flags to customize the game experience. The quiz is trivia style - the user is asked a question and provides a freeform answer. 
 
+## Thoughts 
+**Total Time: 4 hours 14 minutes**
+I thought this would be easier. I was so confident in my approach that I spent some time researching CLI formatting and ANSI colors codes. I eventually discarded that approach to better the underlying logic. 
+
+I did learn a lot about golang, packages, and concurrency. Idiomatic go still feels a bit alien, especially with repetitive error handling. Typing `if err != nil {...}` is annoying, but I trust its become idiomatic for a reason. 
+
+
 ## Requirements
 ### Part 1
 - [x] Ingests CSV file
@@ -29,7 +36,7 @@ Build a CLI Quiz app that uses flags to customize the game experience. The quiz 
 
 
 <details>
-<summary><h2>Exercise details</h2></summary>
+<summary><h2> Exercise details </h2></summary>
 This exercise is broken into two parts to help simplify the process of explaining it as well as to make it easier to solve. The second part is harder than the first, so if you get stuck feel free to move on to another problem then come back to part 2 later.
 
 ### Part 1

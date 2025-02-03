@@ -30,7 +30,7 @@ const (
 
 // Default values for flags
 const (
-	defaultCSV = "./questions.csv"
+	defaultCSV       = "./questions.csv"
 	defaultTimeLimit = 30 * time.Second
 )
 
@@ -80,7 +80,7 @@ func loadQuestions(path string) ([]Question, error) {
 	qs := make([]Question, len(records))
 	for i, rec := range records {
 		qs[i] = Question{
-			prompt: rec[0], 
+			prompt: rec[0],
 			answer: cleanInput(rec[1]),
 		}
 	}
@@ -94,6 +94,7 @@ func cleanInput(s string) string {
 }
 
 func shuffleQuestions(questions []Question) {
+	// Traverses through questions and swaps with a random index
 	for i := range questions {
 		j := rand.Intn(i + 1)
 		questions[i], questions[j] = questions[j], questions[i]
@@ -111,10 +112,11 @@ func runQuiz(questions []Question, timeLimit time.Duration) int {
 	answerCh := make(chan string)
 	reader := bufio.NewReader(os.Stdin)
 
-	quizLoop:
+quizLoop:
 	for i, q := range questions {
-		fmt.Printf("Question %d: %s =", i + 1, q.prompt)
-
+		fmt.Printf("Question %d: %s =", i+1, q.prompt)
+		
+		// So goroutines were the only way I could think of to handle the user input block (calling reader.Readstring() blocks input until a user types an answer and I'm supposed to kill the quiz even while waiting for an answer). I'm not sure if this is the best way to do it. 
 		go func() {
 			input, _ := reader.ReadString('\n')
 			answerCh <- cleanInput(input)
@@ -122,7 +124,7 @@ func runQuiz(questions []Question, timeLimit time.Duration) int {
 
 		// Wait for answer or timeout
 		select {
-		case <-timer.C:
+		case <-timer.C: // Per https://pkg.go.dev/time#Timer, when the timer expires, current time gets sent on on C, which is our signal to alert the user and break the loop (thus ending the quiz). The JS/TS dev in me hates breaking loops but it seems like go devs are ok with it, given their baser natures.
 			fmt.Println("\nTime's up!")
 			break quizLoop
 		case answer := <-answerCh:
