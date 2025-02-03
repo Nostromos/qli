@@ -1,6 +1,35 @@
 # Exercise #1: Quiz Game
 
-## Exercise details
+## Summary
+Build a CLI Quiz app that uses flags to customize the game experience. The quiz is trivia style - the user is asked a question and provides a freeform answer. 
+
+## Requirements
+### Part 1
+- [x] Ingests CSV file
+  - [x] User-provided path via flags
+  - [x] Default path and questions included with package (defaults to `problems.csv`)
+- [x] Parses CSV into questions and answers
+- [x] Asks questions of user and accepts input as answer
+- [x] Compares user provided input with answer and keeps track of # of correct/incorrect answers
+- [x] Regardless of correct/incorrect, next question is asked immediately after user input
+- [x] Quiz Format
+  - [x] < 100 questions
+  - [x] Single word/number answers
+- [x] At end of quiz, program outputs total number of questions correct out of total
+
+### Part 2
+- [x] Add timer with default limit of 30 secs, customizable with flag
+- [x] User must press `enter` (or another key) before timer starts, then questions are printed out one at a time until an answer is given
+- [x] Quiz must stop when time limit is exceeded - do not wait for the user to answer their final question. Ideally stops quiz entirely even if you're waiting on user answer.
+- [x] Regardless of whether time limit was exceeded, program must still output "score" with unanswered questions and invalid answers considered incorrect.
+
+### Bonus
+- [x] Add string trimming and cleanup to help ensure that correct answers with extra whitespace, capitalization, etc are not considered incorrect. Hint: Check out the strings package.
+- [x] Add an option (a new flag) to shuffle the quiz order each time it is run.
+
+
+<details>
+<summary><h2>Exercise details</h2></summary>
 This exercise is broken into two parts to help simplify the process of explaining it as well as to make it easier to solve. The second part is harder than the first, so if you get stuck feel free to move on to another problem then come back to part 2 later.
 
 ### Part 1
@@ -46,3 +75,7 @@ As a bonus exercises you can also…
 
 1. Add string trimming and cleanup to help ensure that correct answers with extra whitespace, capitalization, etc are not considered incorrect. Hint: Check out the strings package.
 2. Add an option (a new flag) to shuffle the quiz order each time it is run.
+</details>
+
+
+
