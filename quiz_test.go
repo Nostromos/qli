@@ -3,41 +3,118 @@ package main
 import (
 	"testing"
 	"os"
+	"io/ioutil"
 )
+
+func createTempFile(t *testing.T, content string) string {
+	t.Helper() // Marks this as a test helper function
+	tmpfile, err := ioutil.TempFile("", "quiz_test*.csv")
+	if err != nil {
+		t.Fatalf("Failed to create temp file: %v", err)
+	}
+	if _, err := tmpfile.Write([]byte(content)); err != nil {
+		tmpfile.Close()
+		t.Fatalf("Failed to write to temp file: %v", err)
+	}
+	if err := tmpfile.Close(); err != nil {
+		t.Fatalf("Failed to close temp file: %v", err)
+	}
+	return tmpfile.Name()
+}
 
 // Quiz File Loading
 // 1. Must load questions correctly from a valid CSV file.
 // 2. Must properly handle invalid/malformed CSV files.
 // 3. Must properly handle empty CSV files.
+
 // TestLoadQuestions_ValidFile // test that questions from a valid CSV are loaded correctly
 func TestLoadQuestions_ValidFile(t *testing.T) {
-	// test that the path is valid
-	t.Run("ValidPath", func (t *testing.T) {
-		// create temp file
-		tmpFile, err := os.CreateTemp("", "testfiles*.csv")
-		if err != nil {
-			t.Fatalf("Failed to create temp file: %v", err)
-		}
-		defer os.Remove(tmpFile.Name()) // clean up after
-	})
-	// test that the CSV is valid
+	content := "What is 2 + 2?,4\nWhat is the capital of France?,paris"
+	path := createTempFile(t, content)
+	defer os.Remove(path) // Cleanup
 
-	// test that the file is loaded correctly
+	questions, err := loadQuestions(path)
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
 
-	// test that the questions are loaded correctly
+	if len(questions) != 2 {
+		t.Fatalf("Expected 2 questions, got %d", len(questions))
+	}
 
+	if questions[0].prompt != "What is 2 + 2?" || questions[0].answer != "4" {
+		t.Fatalf("Unexpected question/answer pair: %v", questions[0])
+	}
 }
+
 // TestLoadQuestions_InvalidFile // test that an error is thrown when loading an invalid path
+func TestLoadQuestions_InvalidFile(t *testing.T) {
+	_, err := loadQuestions("nonexistent.csv")
+	if err == nil {
+		t.Fatal("Expected an error when loading a non-existent file, got nil")
+	}
+}
 // TestLoadQuestions_EmptyFile // test that an error is thrown when loading an empty file
+func TestLoadQuestions_EmptyFile(t *testing.T) {
+	path := createTempFile(t, "")
+	defer os.Remove(path)
+
+	questions, err := loadQuestions(path)
+	if err == nil {
+		t.Fatal("Expected an error for empty CSV, but got nil")
+	}
+
+	if len(questions) != 0 {
+		t.Fatalf("Expected 0 questions, but got %d", len(questions))
+	}
+}
+
 // TestLoadQuestions_MalformedCSV // test that an error is thrown when loading a malformed CSV
 // TestShuffleQuestions_LengthUnchanged // test that the length of the questions array remains the same after shuffling
 // TestShuffleQuestions_OrderChanges // test that the order of the questions array changes after shuffling
 
 // Test Shuffling Functionality
 // We can't test randomness itself but can validate that consecutive runs with same questions produce different orders (with seeded randomness if needed)
-// TestShuffleQuestions_LengthUnchanged // Test that the length of the questions array remains the same after shuffling
-// TestShuffleQuestions_OrderChanges // Test that the order of the questions array changes after shuffling but that the CSV file remains the same
 
+// TestShuffleQuestions_LengthUnchanged // Test that the length of the questions array remains the same after shuffling
+func TestShuffleQuestions_LengthUnchanged(t *testing.T) {
+	questions := []Question{
+		{"Question 1", "Answer 1"},
+		{"Question 2", "Answer 2"},
+		{"Question 3", "Answer 3"},
+	}
+
+	shuffleQuestions(questions)
+	if len(questions) != 3 {
+		t.Fatalf("Expected 3 questions after shuffle, got %d", len(questions))
+	}
+}
+
+// TestShuffleQuestions_OrderChanges // Test that the order of the questions array changes after shuffling but that the CSV file remains the same
+func TestShuffleQuestions_OrderChanges(t *testing.T) {
+	questions := []Question{
+		{"Question 1", "Answer 1"},
+		{"Question 2", "Answer 2"},
+		{"Question 3", "Answer 3"},
+	}
+
+	initialOrder := make([]Question, len(questions))
+	copy(initialOrder, questions) // Copy the original order
+
+	shuffleQuestions(questions)
+
+	sameOrder := true
+	for i := range questions {
+		if questions[i] != initialOrder[i] {
+			sameOrder = false
+			break
+		}
+	}
+
+	if sameOrder {
+		t.Fatal("Expected shuffled order to be different, but it remained the same")
+	}
+}
 
 // Test User Input Handling & Answer Checking
 // 1. Test exact matches
