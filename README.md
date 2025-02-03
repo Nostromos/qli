@@ -22,9 +22,9 @@ https://github.com/Nostromos/qli/blob/6671cb7a4a2bda6751cd9a8775a72fa1bae309f2/q
 Golang Channels and value assignation are not intuitive to me (coming from the JS/TS world) so this syntax was confusing to learn but I can see how useful it would be. 
 
 ## Improvements
+- [x] Remove copilot suggestions for future gophercises. Far too annoying and really hurts ability to learn patterns or reason myself.  
 - [ ] Add handling for different question types: multiple choice, correct order, etc.
 - [ ] Ensure that all loop segments are handled by goroutines. Reading and printing questions are also blocking (I think), so this would make it insignificantly more responsive but probably unnoticeable to the user. It would be good practice. 
-- [ ] Remove copilot suggestions for future gophercises. Far too annoying and really hurts ability to learn patterns or reason myself.  
 
 ## Requirements
 ### Part 1
