@@ -18,20 +18,6 @@ type Question struct {
 	answer string
 }
 
-// Represents a file containing a list of questions
-type Quiz struct {
-	path      string
-	filetype  string
-	questions [][]Question
-}
-
-// Represents a single game
-type Game struct {
-	quiz           Quiz
-	correctAnswers int
-	totalQuestions int
-}
-
 // ANSI colors for the live timer
 // TODO: Refactor this out into a separate file along with all the CLI display logic
 const (
@@ -69,7 +55,7 @@ func main() {
 
 	// Welcome
 	fmt.Println("Welcome to the Quiz Game!")
-	fmt.Println("You have %v to answer as many questions as you can. Good luck!", *timeLimit)
+	fmt.Printf("You have %v to answer as many questions as you can. Good luck!\n", *timeLimit)
 	fmt.Println("Press Enter to start the quiz...")
 
 	// Run quiz with time limit
@@ -95,7 +81,7 @@ func loadQuestions(path string) ([]Question, error) {
 	for i, rec := range records {
 		qs[i] = Question{
 			prompt: rec[0], 
-			answer: cleanInput(rec[1]), // TODO: Ensure that answers are trimmed and lowercased
+			answer: cleanInput(rec[1]),
 		}
 	}
 	return qs, nil
