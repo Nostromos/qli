@@ -52,11 +52,11 @@ func main() {
 		shuffleQuestions(questions)
 	}
 
-
 	// Welcome
 	fmt.Println("Welcome to the Quiz Game!")
 	fmt.Printf("You have %v to answer as many questions as you can. Good luck!\n", *timeLimit)
 	fmt.Println("Press Enter to start the quiz...")
+	waitForEnter()
 
 	// Run quiz with time limit
 	correctAnswers := runQuiz(questions, *timeLimit)
@@ -98,6 +98,11 @@ func shuffleQuestions(questions []Question) {
 		j := rand.Intn(i + 1)
 		questions[i], questions[j] = questions[j], questions[i]
 	}
+}
+
+func waitForEnter() {
+	reader := bufio.NewReader(os.Stdin)
+	_, _ = reader.ReadString('\n')
 }
 
 func runQuiz(questions []Question, timeLimit time.Duration) int {
