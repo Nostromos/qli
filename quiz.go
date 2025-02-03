@@ -114,16 +114,31 @@ func shuffleQuestions(questions []Question) {
 	}
 }
 
-// func runTimer(start time.Time, line int, stop chan bool, color string) {
-// 	for {
-// 		select {
-// 		case <-stop:
-// 			return // Stop the timer when signaled
-// 		default:
-// 			elapsed := time.Since(start)
-// 			// Use ANSI escape code to move cursor and update the correct line with color
-// 			fmt.Printf("\033[%d;0H%sElapsed time for Timer %d: %s%s", line, color, line, elapsed.Round(time.Second), Reset)
-// 			time.Sleep(100 * time.Millisecond) // Update every 100ms
-// 		}
-// 	}
-// }
+func runQuiz(questions []Question, timeLimit time.Duration) int {
+	correctAnswers := 0
+	timer := time.NewTimer(timeLimit)
+	answerCh := make(chan string)
+	reader := bufio.NewReader(os.Stdin)
+
+	quizLoop:
+	for i, q := range questions {
+		fmt.Printf("Question %d: %s =", i + 1, q.prompt)
+
+		go func() {
+			input, _ := reader.ReadString('\n')
+			answerCh <- cleanInput(input)
+		}()
+
+		// Wait for answer or timeout
+		select {
+		case <-timer.C:
+			fmt.Println("\nTime's up!")
+			break quizLoop
+		case answer := <-answerCh:
+			if answer == q.answer {
+				correctAnswers++
+			}
+		}
+	}
+	return correctAnswers
+}
