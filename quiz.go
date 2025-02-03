@@ -115,8 +115,8 @@ func runQuiz(questions []Question, timeLimit time.Duration) int {
 quizLoop:
 	for i, q := range questions {
 		fmt.Printf("Question %d: %s =", i+1, q.prompt)
-		
-		// So goroutines were the only way I could think of to handle the user input block (calling reader.Readstring() blocks input until a user types an answer and I'm supposed to kill the quiz even while waiting for an answer). I'm not sure if this is the best way to do it. 
+
+		// So goroutines were the only way I could think of to handle the user input block (calling reader.Readstring() blocks input until a user types an answer and I'm supposed to kill the quiz even while waiting for an answer). I'm not sure if this is the best way to do it.
 		go func() {
 			input, _ := reader.ReadString('\n')
 			answerCh <- cleanInput(input)
