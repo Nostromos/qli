@@ -53,7 +53,7 @@ func TestLoadQuestions_InvalidFile(t *testing.T) {
 	if err == nil {
 		t.Fatal("Expected an error when loading a non-existent file, got nil")
 	}
-}
+}``
 
 // TestLoadQuestions_EmptyFile // test that an error is thrown when loading an empty file
 func TestLoadQuestions_EmptyFile(t *testing.T) {
