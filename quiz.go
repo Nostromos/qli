@@ -76,6 +76,10 @@ func loadQuestions(path string) ([]Question, error) {
 	if err != nil {
 		return nil, err
 	}
+	
+	if len(records) == 0 {
+		return nil, fmt.Errorf("CSV file is empty")
+	}
 
 	qs := make([]Question, len(records))
 	for i, rec := range records {
