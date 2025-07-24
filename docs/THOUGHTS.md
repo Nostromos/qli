@@ -1,23 +1,29 @@
-# Exercise #1: Quiz Game
+---
+sidebar_position: 4
+---
 
-## Summary
-Build a CLI Quiz app that uses flags to customize the game experience. The quiz is trivia style - the user is asked a question and provides a freeform answer. 
-
-## Thoughts 
+# Thoughts 
 **Total Time: 4 hours 14 minutes**
+
 I thought this would be easier. I was so confident in my approach that I spent some time researching CLI formatting and ANSI colors codes. I eventually discarded that approach to better the underlying logic. 
 
 I did learn a lot about golang, packages, and concurrency. Idiomatic go still feels a bit alien, especially with repetitive error handling. Typing `if err != nil {...}` is annoying, but I trust its become idiomatic for a reason. 
-<br><br>
+
+```go reference
 https://github.com/Nostromos/qli/blob/6671cb7a4a2bda6751cd9a8775a72fa1bae309f2/quiz.go#L15-L18
+```
 
 I started with multiple structs and was getting really detailed with typing but ended trashing everything but one. 
-<br><br>
+
+```go reference
 https://github.com/Nostromos/qli/blob/6671cb7a4a2bda6751cd9a8775a72fa1bae309f2/quiz.go#L115-L135
+```
 
 My initial question/answer loop wouldn't break on timer expiration. In fact it originally had elapsed time saved to a variable that updated each loop. Concurrency is a relatively new concept to me and it took at least an hour for me to realize that `reader.ReadString('\n')` is blocking. It took me another 30-40 mins to figure out that I could use a goroutine to handle the user input portion and a select/case to deal with breaking out of the loop. I'm not sure if this is the best way to do it.
-<br><br>
+
+```go reference
 https://github.com/Nostromos/qli/blob/6671cb7a4a2bda6751cd9a8775a72fa1bae309f2/quiz.go#L130
+```
 
 Golang Channels and value assignation are not intuitive to me (coming from the JS/TS world) so this syntax was confusing to learn but I can see how useful it would be. 
 

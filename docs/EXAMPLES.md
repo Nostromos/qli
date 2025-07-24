@@ -1,4 +1,8 @@
-# Quiz Examples and Use Cases
+---
+sidebar_position: 3
+---
+
+# Examples and Use Cases
 
 ## Basic Examples
 

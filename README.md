@@ -19,11 +19,15 @@ A command-line quiz application written in Go that reads questions from CSV file
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/Nostromos/qli.git
+```
+
+2. Navigate to the repo:
+```bash
 cd quiz
 ```
 
-2. Build the application:
+3. Build the application:
 ```bash
 go build -o quiz quiz.go
 ```
@@ -48,11 +52,11 @@ Run the quiz with default settings (30-second timer, questions.csv file):
 ./quiz [options]
 ```
 
-| Flag | Description | Default |
-|------|-------------|---------|
-| `-csv` | Path to CSV file containing questions | `./questions.csv` |
-| `-limit` | Time limit for the quiz (e.g., 30s, 1m, 1h) | `30s` |
-| `-shuffle` | Shuffle questions randomly | `false` |
+| Flag       | Description                                 | Default           |
+| ---------- | ------------------------------------------- | ----------------- |
+| `-csv`     | Path to CSV file containing questions       | `./questions.csv` |
+| `-limit`   | Time limit for the quiz (e.g., 30s, 1m, 1h) | `30s`             |
+| `-shuffle` | Shuffle questions randomly                  | `false`           |
 
 ### Examples
 

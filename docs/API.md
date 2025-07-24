@@ -1,4 +1,8 @@
-# Quiz API Documentation
+---
+sidebar_position: 2
+---
+
+# API Documentation
 
 ## Overview
 
