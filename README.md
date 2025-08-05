@@ -17,7 +17,7 @@
 
 ## Overview
 
-A command-line quiz application written in Go that reads questions from CSV files and challenges users against a timer.
+A command-line quiz application written in Go that reads questions from CSV files and challenges users against a timer. Built as part of the [Gophercises](https://gophercises.com/) exercise series by Jon Calhoun.
 
 ## Features
 
@@ -36,15 +36,13 @@ A command-line quiz application written in Go that reads questions from CSV file
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Nostromos/qli.git
+git clone https://github.com/Nostromos/gophercises.git
 ```
-
-2. Navigate to the repo:
 ```bash
-cd quiz
+cd gophercises/quiz
 ```
 
-3. Build the application:
+2. Build the application:
 ```bash
 go build -o quiz quiz.go
 ```
@@ -80,13 +78,16 @@ Run the quiz with default settings (30-second timer, questions.csv file):
 ```bash
 # Use a custom questions file
 ./quiz -csv=myquestions.csv
-
+```
+```bash
 # Set a 1-minute time limit
 ./quiz -limit=1m
-
+```
+```bash
 # Shuffle questions for variety
 ./quiz -shuffle
-
+```
+```bash
 # Combine all options
 ./quiz -csv=advanced.csv -limit=2m -shuffle
 ```
@@ -105,6 +106,11 @@ What year was Go released?,2009
 ```
 
 **Note**: The CSV parser properly handles questions containing commas.
+
+### Sample Files Included:
+- `questions.csv` - Default basic math questions
+- `math.csv` - Additional math problems
+- `trivia.csv` - General trivia questions
 
 ## How It Works
 
@@ -133,11 +139,18 @@ go test
 
 ```
 quiz/
-├── quiz.go          # Main application code
-├── quiz_test.go     # Test suite
-├── questions.csv    # Default questions file
-├── go.mod          # Go module file
-└── README.md       # This file
+├── quiz.go              # Main application code
+├── quiz_test.go         # Test suite
+├── questions.csv        # Default questions file
+├── math.csv             # Math questions
+├── trivia.csv           # Trivia questions
+├── qli-header-image.svg # Header image
+├── docs/                # Documentation
+│   ├── API.md           # API documentation
+│   ├── EXAMPLES.md      # Usage examples
+│   └── THOUGHTS.md      # Development notes
+├── go.mod               # Go module file
+└── README.md            # This file
 ```
 
 ## Contributing
@@ -150,15 +163,14 @@ quiz/
 
 ## License
 
-This project is part of the [Gophercises](https://gophercises.com/) exercise series by Jon Calhoun.
+See [LICENSE](./LICENSE) for more information.
 
 ## Acknowledgments
 
-- Built as part of the Gophercises learning series
-- Focuses on teaching Go fundamentals including:
-  - File I/O
-  - CSV parsing
-  - Command-line flags
-  - Concurrency with goroutines and channels
-  - Timer management
-  - Testing practices
+This project is part of the [Gophercises](https://gophercises.com/) exercise series by Jon Calhoun.
+
+## Additional Resources
+
+- [Documentation](./docs/) - API reference and examples
+- [Gophercises](https://gophercises.com/) - Complete exercise series
+- [Go Documentation](https://go.dev/doc/) - Official Go documentation
