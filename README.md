@@ -1,4 +1,21 @@
-# QLI - Quiz Line Interface
+<p align="center">
+  <img src="./qli-header-image.svg" alt="Quiz Line Interface" />
+</p>
+<h1 align="center"><i>QLI - Quiz Line Interface</i></h1>
+
+<p align="center">
+  <a href="https://go.dev">
+    <img alt="Go" src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white" />
+  </a>
+  <a href="https://github.com/Nostromos/qli">
+    <img alt="CLI" src="https://img.shields.io/badge/CLI-4285F4?style=for-the-badge&logo=gnubash&logoColor=white" />
+  </a>
+  <a href="https://gophercises.com">
+    <img alt="Gophercises" src="https://img.shields.io/badge/Gophercises-FF6B6B?style=for-the-badge&logo=go&logoColor=white" />
+  </a>
+</p>
+
+## Overview
 
 A command-line quiz application written in Go that reads questions from CSV files and challenges users against a timer.
 
